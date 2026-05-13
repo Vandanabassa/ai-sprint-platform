@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historical Analytics - AI Sprint Platform</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="analytics-styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 Historical Analytics Dashboard</h1>
+            <p class="subtitle">Velocity trends and performance metrics</p>
+            <nav class="header-nav">
+                <a href="index.html" class="nav-link">Story Estimator</a>
+                <a href="capacity.html" class="nav-link">Capacity Calculator</a>
+                <a href="predictor.html" class="nav-link">Success Predictor</a>
+                <a href="board.html" class="nav-link">Planning Board</a>
+                <a href="analytics.html" class="nav-link active">Analytics</a>
+                <a href="jira.html" class="nav-link">JIRA</a>
+            </nav>
+        </header>
+
+        <main>
+            <!-- Data Input Section -->
+            <div class="analytics-section">
+                <h2>📥 Sprint History Data</h2>
+                <p class="section-description">Enter your sprint history to analyze velocity trends and performance metrics</p>
+                
+                <div class="data-input">
+                    <textarea 
+                        id="sprintHistoryInput" 
+                        placeholder='[
+  {
+    "sprint": 1,
+    "committedPoints": 28,
+    "completedPoints": 25,
+    "storiesCompleted": 12,
+    "storiesCarriedOver": 2,
+    "carryoverPoints": 3,
+    "date": "2024-01-15"
+  },
+  {
+    "sprint": 2,
+    "committedPoints": 30,
+    "completedPoints": 30,
+    "storiesCompleted": 15,
+    "storiesCarriedOver": 0,
+    "carryoverPoints": 0,
+    "date": "2024-01-29"
+  }
+]'
+                        rows="12"
+                    ></textarea>
+                </div>
+
+                <div class="action-buttons">
+                    <button id="analyzeBtn" class="btn btn-primary btn-large">
+                        <span class="btn-icon">📊</span>
+                        Analyze Sprint History
+                    </button>
+                    <button id="loadExampleBtn" class="btn btn-secondary">
+                        <span class="btn-icon">📦</span>
+                        Load Example Data
+                    </button>
+                    <button id="clearDataBtn" class="btn btn-secondary">
+                        <span class="btn-icon">🗑️</span>
+                        Clear Data
+                    </button>
+                </div>
+            </div>
+
+            <!-- Analytics Results -->
+            <div id="analyticsResults" class="results-section" style="display: none;">
+                <!-- Overview Cards -->
+                <div class="overview-section">
+                    <h2>📈 Performance Overview</h2>
+                    <div class="metrics-grid">
+                        <div class="metric-card velocity-card">
+                            <div class="metric-icon">⚡</div>
+                            <div class="metric-label">Average Velocity</div>
+                            <div id="avgVelocity" class="metric-value">-</div>
+                            <div class="metric-trend" id="velocityTrend">-</div>
+                        </div>
+                        <div class="metric-card accuracy-card">
+                            <div class="metric-icon">🎯</div>
+                            <div class="metric-label">Commitment Accuracy</div>
+                            <div id="avgAccuracy" class="metric-value">-</div>
+                            <div class="metric-unit">%</div>
+                        </div>
+                        <div class="metric-card success-card">
+                            <div class="metric-icon">✅</div>
+                            <div class="metric-label">Sprint Success Rate</div>
+                            <div id="successRate" class="metric-value">-</div>
+                            <div class="metric-unit">%</div>
+                        </div>
+                        <div class="metric-card throughput-card">
+                            <div class="metric-icon">📦</div>
+                            <div class="metric-label">Avg Throughput</div>
+                            <div id="avgThroughput" class="metric-value">-</div>
+                            <div class="metric-unit">stories/sprint</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Velocity Chart -->
+                <div class="chart-section">
+                    <h2>📉 Velocity Trend</h2>
+                    <div class="chart-container">
+                        <canvas id="velocityChart"></canvas>
+                    </div>
+                    <div class="chart-legend">
+                        <div class="legend-item">
+                            <span class="legend-color committed"></span>
+                            <span>Committed Points</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color completed"></span>
+                            <span>Completed Points</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Accuracy Chart -->
+                <div class="chart-section">
+                    <h2>🎯 Commitment Accuracy</h2>
+                    <div class="chart-container">
+                        <canvas id="accuracyChart"></canvas>
+                    </div>
+                    <div class="accuracy-zones">
+                        <div class="zone excellent">
+                            <span class="zone-label">Excellent</span>
+                            <span class="zone-range">≥95%</span>
+                        </div>
+                        <div class="zone good">
+                            <span class="zone-label">Good</span>
+                            <span class="zone-range">80-94%</span>
+                        </div>
+                        <div class="zone needs-improvement">
+                            <span class="zone-label">Needs Improvement</span>
+                            <span class="zone-range"><80%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sprint Metrics Table -->
+                <div class="table-section">
+                    <h2>📋 Sprint-by-Sprint Metrics</h2>
+                    <div class="table-container">
+                        <table id="sprintMetricsTable" class="metrics-table">
+                            <thead>
+                                <tr>
+                                    <th>Sprint</th>
+                                    <th>Committed</th>
+                                    <th>Completed</th>
+                                    <th>Accuracy</th>
+                                    <th>Stories</th>
+                                    <th>Carryover</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="metricsTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Velocity Statistics -->
+                <div class="stats-section">
+                    <h2>📊 Velocity Statistics</h2>
+                    <div class="stats-grid">
+                        <div class="stat-box">
+                            <div class="stat-label">Maximum Velocity</div>
+                            <div id="maxVelocity" class="stat-value">-</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-label">Minimum Velocity</div>
+                            <div id="minVelocity" class="stat-value">-</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-label">Standard Deviation</div>
+                            <div id="stdDeviation" class="stat-value">-</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-label">Predictability</div>
+                            <div id="predictability" class="stat-value">-</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-label">Total Sprints</div>
+                            <div id="totalSprints" class="stat-value">-</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-label">Successful Sprints</div>
+                            <div id="successfulSprints" class="stat-value">-</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recommendations -->
+                <div id="recommendationsSection" class="insights-section">
+                    <h2>💡 Insights & Recommendations</h2>
+                    <div id="recommendationsList"></div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>Powered by AI Sprint Platform • Built with ❤️</p>
+        </footer>
+    </div>
+
+    <script src="analytics.js"></script>
+</body>
+</html>

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sprint Success Predictor - AI Sprint Platform</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="predictor-styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎯 Sprint Success Predictor</h1>
+            <p class="subtitle">Probability-based risk assessment for sprint planning</p>
+            <nav class="header-nav">
+                <a href="index.html" class="nav-link">Story Estimator</a>
+                <a href="capacity.html" class="nav-link">Capacity Calculator</a>
+                <a href="predictor.html" class="nav-link active">Success Predictor</a>
+                <a href="board.html" class="nav-link">Planning Board</a>
+                <a href="analytics.html" class="nav-link">Analytics</a>
+                <a href="jira.html" class="nav-link">JIRA</a>
+            </nav>
+        </header>
+
+        <main>
+            <!-- Sprint Data Section -->
+            <div class="predictor-section">
+                <h2>📊 Sprint Data</h2>
+                <div class="config-row">
+                    <div class="config-item">
+                        <label for="sprintCapacity">Sprint Capacity (SP)</label>
+                        <input type="number" id="sprintCapacity" value="30" min="1" max="200">
+                        <small>Total team capacity in story points</small>
+                    </div>
+                    <div class="config-item">
+                        <label for="committedPoints">Committed Points (SP)</label>
+                        <input type="number" id="committedPoints" value="28" min="0" max="200">
+                        <small>Story points committed for sprint</small>
+                    </div>
+                    <div class="config-item">
+                        <label for="dependencies">External Dependencies</label>
+                        <input type="number" id="dependencies" value="2" min="0" max="50">
+                        <small>Number of external dependencies</small>
+                    </div>
+                    <div class="config-item">
+                        <label for="blockers">Active Blockers</label>
+                        <input type="number" id="blockers" value="0" min="0" max="20">
+                        <small>Current blocking issues</small>
+                    </div>
+                </div>
+
+                <h3>Stories Breakdown</h3>
+                <div class="stories-breakdown">
+                    <textarea 
+                        id="sprintStories" 
+                        placeholder='[
+  {
+    "id": "STORY-1",
+    "title": "User Authentication",
+    "storyPoints": 5,
+    "confidence": "high",
+    "priority": "high"
+  },
+  {
+    "id": "STORY-2",
+    "title": "Database Migration",
+    "storyPoints": 8,
+    "confidence": "low",
+    "priority": "medium"
+  },
+  {
+    "id": "STORY-3",
+    "title": "UI Updates",
+    "storyPoints": 3,
+    "confidence": "high",
+    "priority": "low"
+  }
+]'
+                        rows="12"
+                    ></textarea>
+                </div>
+            </div>
+
+            <!-- Team Metrics Section -->
+            <div class="predictor-section">
+                <h2>👥 Team Metrics</h2>
+                <div class="config-row">
+                    <div class="config-item">
+                        <label for="teamSize">Team Size</label>
+                        <input type="number" id="teamSize" value="5" min="1" max="50">
+                    </div>
+                    <div class="config-item">
+                        <label for="averageAvailability">Average Availability (%)</label>
+                        <input type="number" id="averageAvailability" value="85" min="0" max="100">
+                        <small>Team member availability percentage</small>
+                    </div>
+                    <div class="config-item">
+                        <label for="experienceLevel">Experience Level</label>
+                        <select id="experienceLevel">
+                            <option value="junior">Junior</option>
+                            <option value="mid" selected>Mid-Level</option>
+                            <option value="senior">Senior</option>
+                            <option value="mixed">Mixed</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Historical Data Section -->
+            <div class="predictor-section">
+                <h2>📈 Historical Velocity</h2>
+                <p class="section-description">Enter past sprint data for better predictions (optional but recommended)</p>
+                <div class="stories-breakdown">
+                    <textarea 
+                        id="historicalData" 
+                        placeholder='[
+  { "sprint": 1, "committedPoints": 28, "completedPoints": 25 },
+  { "sprint": 2, "committedPoints": 30, "completedPoints": 30 },
+  { "sprint": 3, "committedPoints": 32, "completedPoints": 28 },
+  { "sprint": 4, "committedPoints": 30, "completedPoints": 32 },
+  { "sprint": 5, "committedPoints": 35, "completedPoints": 33 }
+]'
+                        rows="8"
+                    ></textarea>
+                </div>
+            </div>
+
+            <!-- Analyze Button -->
+            <div class="action-section">
+                <button id="analyzePredictionBtn" class="btn btn-primary btn-large">
+                    <span class="btn-icon">🎯</span>
+                    Analyze Sprint Success Probability
+                </button>
+            </div>
+
+            <!-- Prediction Results -->
+            <div id="predictionResults" class="results-section" style="display: none;">
+                <h2>🎯 Prediction Results</h2>
+                
+                <!-- Success Probability Gauge -->
+                <div class="probability-gauge">
+                    <div class="gauge-container">
+                        <svg class="gauge-svg" viewBox="0 0 200 120">
+                            <path class="gauge-background" d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#e0e0e0" stroke-width="20"/>
+                            <path id="gaugeProgress" class="gauge-progress" d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#4CAF50" stroke-width="20" stroke-dasharray="251.2" stroke-dashoffset="251.2"/>
+                        </svg>
+                        <div class="gauge-center">
+                            <div id="probabilityValue" class="probability-value">0%</div>
+                            <div class="probability-label">Success Probability</div>
+                        </div>
+                    </div>
+                    <div id="riskLevelBadge" class="risk-level-badge">Low Risk</div>
+                </div>
+
+                <!-- Key Metrics -->
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-icon">📊</div>
+                        <div class="metric-label">Capacity Utilization</div>
+                        <div id="capacityUtilization" class="metric-value">-</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon">👥</div>
+                        <div class="metric-label">Team Availability</div>
+                        <div id="teamAvailabilityMetric" class="metric-value">-</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon">⚡</div>
+                        <div class="metric-label">Complexity Ratio</div>
+                        <div id="complexityRatio" class="metric-value">-</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon">🔗</div>
+                        <div class="metric-label">Dependencies</div>
+                        <div id="dependenciesMetric" class="metric-value">-</div>
+                    </div>
+                </div>
+
+                <!-- Risk Factors -->
+                <div id="riskFactorsSection" class="risk-section">
+                    <h3>⚠️ Risk Factors</h3>
+                    <div id="riskFactorsList" class="risk-list"></div>
+                </div>
+
+                <!-- Strengths -->
+                <div id="strengthsSection" class="strengths-section" style="display: none;">
+                    <h3>✅ Strengths</h3>
+                    <div id="strengthsList" class="strengths-list"></div>
+                </div>
+
+                <!-- Recommendations -->
+                <div id="recommendationsSection" class="insights-section">
+                    <h3>💡 Recommendations</h3>
+                    <div id="recommendationsList"></div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>Powered by AI Sprint Platform • Built with ❤️</p>
+        </footer>
+    </div>
+
+    <script src="predictor.js"></script>
+</body>
+</html>

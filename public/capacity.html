@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sprint Capacity Calculator - AI Sprint Platform</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="capacity-styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 Sprint Capacity Calculator</h1>
+            <p class="subtitle">Automated capacity planning for agile teams</p>
+            <nav class="header-nav">
+                <a href="index.html" class="nav-link">Story Estimator</a>
+                <a href="capacity.html" class="nav-link active">Capacity Calculator</a>
+                <a href="predictor.html" class="nav-link">Success Predictor</a>
+                <a href="board.html" class="nav-link">Planning Board</a>
+                <a href="analytics.html" class="nav-link">Analytics</a>
+                <a href="jira.html" class="nav-link">JIRA</a>
+            </nav>
+        </header>
+
+        <main>
+            <!-- Team Configuration Section -->
+            <div class="capacity-section">
+                <h2>👥 Team Configuration</h2>
+                <div class="team-config">
+                    <div class="config-row">
+                        <div class="config-item">
+                            <label for="sprintDuration">Sprint Duration (days)</label>
+                            <input type="number" id="sprintDuration" value="10" min="1" max="30">
+                        </div>
+                        <div class="config-item">
+                            <label for="focusFactor">Focus Factor (%)</label>
+                            <input type="number" id="focusFactor" value="70" min="0" max="100">
+                            <small>Accounts for meetings, interruptions, etc.</small>
+                        </div>
+                        <div class="config-item">
+                            <label for="workingHoursPerDay">Working Hours/Day</label>
+                            <input type="number" id="workingHoursPerDay" value="8" min="1" max="24">
+                        </div>
+                        <div class="config-item">
+                            <label for="bufferPercentage">Buffer (%)</label>
+                            <input type="number" id="bufferPercentage" value="20" min="0" max="50">
+                            <small>Reserve capacity for unknowns</small>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Team Members</h3>
+                <div id="teamMembers" class="team-members-list"></div>
+                <button id="addMemberBtn" class="btn btn-secondary">
+                    <span class="btn-icon">➕</span>
+                    Add Team Member
+                </button>
+            </div>
+
+            <!-- Holidays & Leave Section -->
+            <div class="capacity-section">
+                <h2>📅 Holidays & Planned Leave</h2>
+                <div class="config-row">
+                    <div class="config-item">
+                        <label for="holidays">Number of Holidays</label>
+                        <input type="number" id="holidays" value="0" min="0" max="30">
+                    </div>
+                </div>
+                <div id="plannedLeave" class="planned-leave-list"></div>
+                <button id="addLeaveBtn" class="btn btn-secondary">
+                    <span class="btn-icon">➕</span>
+                    Add Planned Leave
+                </button>
+            </div>
+
+            <!-- Calculate Capacity Button -->
+            <div class="action-section">
+                <button id="calculateCapacityBtn" class="btn btn-primary btn-large">
+                    <span class="btn-icon">🧮</span>
+                    Calculate Sprint Capacity
+                </button>
+            </div>
+
+            <!-- Capacity Results -->
+            <div id="capacityResults" class="results-section" style="display: none;">
+                <h2>📈 Capacity Results</h2>
+                
+                <div class="capacity-summary">
+                    <div class="summary-card">
+                        <div class="summary-label">Total Capacity</div>
+                        <div id="totalCapacity" class="summary-value">-</div>
+                        <div class="summary-unit">Story Points</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-label">Total Hours</div>
+                        <div id="totalHours" class="summary-value">-</div>
+                        <div class="summary-unit">Effective Hours</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-label">Team Size</div>
+                        <div id="teamSize" class="summary-value">-</div>
+                        <div class="summary-unit">Members</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-label">Avg per Member</div>
+                        <div id="avgCapacity" class="summary-value">-</div>
+                        <div class="summary-unit">Story Points</div>
+                    </div>
+                </div>
+
+                <div class="member-capacities">
+                    <h3>Individual Capacities</h3>
+                    <div id="memberCapacitiesTable"></div>
+                </div>
+
+                <div id="capacityRecommendations" class="insights-section"></div>
+            </div>
+
+            <!-- Sprint Planning Section -->
+            <div class="capacity-section">
+                <h2>🎯 Sprint Planning</h2>
+                <p class="section-description">Add stories to plan your sprint based on calculated capacity</p>
+                
+                <div class="stories-input">
+                    <textarea 
+                        id="sprintStories" 
+                        placeholder='[
+  {
+    "id": "STORY-1",
+    "title": "User Authentication",
+    "description": "Implement OAuth login",
+    "priority": "high"
+  },
+  {
+    "id": "STORY-2",
+    "title": "Bug Fix",
+    "description": "Fix button alignment",
+    "priority": "medium"
+  }
+]'
+                        rows="10"
+                    ></textarea>
+                </div>
+
+                <button id="planSprintBtn" class="btn btn-primary">
+                    <span class="btn-icon">📋</span>
+                    Plan Sprint
+                </button>
+
+                <div id="sprintPlanResults" class="sprint-plan-results" style="display: none;"></div>
+            </div>
+
+            <!-- Velocity Tracking Section -->
+            <div class="capacity-section">
+                <h2>📊 Velocity Analysis</h2>
+                <p class="section-description">Track team velocity over multiple sprints</p>
+                
+                <div class="stories-input">
+                    <textarea 
+                        id="velocityHistory" 
+                        placeholder='[
+  { "sprint": 1, "completedPoints": 25, "committedPoints": 28 },
+  { "sprint": 2, "completedPoints": 30, "committedPoints": 30 },
+  { "sprint": 3, "completedPoints": 28, "committedPoints": 32 },
+  { "sprint": 4, "completedPoints": 32, "committedPoints": 30 },
+  { "sprint": 5, "completedPoints": 35, "committedPoints": 35 }
+]'
+                        rows="8"
+                    ></textarea>
+                </div>
+
+                <button id="analyzeVelocityBtn" class="btn btn-primary">
+                    <span class="btn-icon">📈</span>
+                    Analyze Velocity
+                </button>
+
+                <div id="velocityResults" class="velocity-results" style="display: none;"></div>
+            </div>
+        </main>
+
+        <footer>
+            <p>Powered by AI Sprint Platform • Built with ❤️</p>
+        </footer>
+    </div>
+
+    <script src="capacity.js"></script>
+</body>
+</html>

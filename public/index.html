@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Story Point Estimator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🤖 AI Story Point Estimator</h1>
+            <p class="subtitle">Instant estimation with NLP analysis</p>
+            <nav class="header-nav">
+                <a href="index.html" class="nav-link active">Story Estimator</a>
+                <a href="capacity.html" class="nav-link">Capacity Calculator</a>
+                <a href="predictor.html" class="nav-link">Success Predictor</a>
+                <a href="board.html" class="nav-link">Planning Board</a>
+                <a href="analytics.html" class="nav-link">Analytics</a>
+                <a href="jira.html" class="nav-link">JIRA</a>
+            </nav>
+        </header>
+
+        <main>
+            <div class="input-section">
+                <h2>Enter User Story</h2>
+                <textarea 
+                    id="userStory" 
+                    placeholder="Example: As a user, I want to integrate OAuth authentication so that users can securely log in using their Google accounts..."
+                    rows="6"
+                ></textarea>
+                
+                <div class="button-group">
+                    <button id="estimateBtn" class="btn btn-primary">
+                        <span class="btn-icon">📊</span>
+                        Estimate Story Points
+                    </button>
+                    <button id="clearBtn" class="btn btn-secondary">
+                        <span class="btn-icon">🗑️</span>
+                        Clear
+                    </button>
+                </div>
+
+                <div class="examples">
+                    <h3>Quick Examples:</h3>
+                    <div class="example-buttons">
+                        <button class="example-btn" data-example="simple">Simple Bug Fix</button>
+                        <button class="example-btn" data-example="medium">Feature Addition</button>
+                        <button class="example-btn" data-example="complex">Complex Integration</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="results" class="results-section" style="display: none;">
+                <h2>Estimation Results</h2>
+                
+                <div class="story-points-card">
+                    <div class="story-points-label">Story Points</div>
+                    <div id="storyPoints" class="story-points-value">-</div>
+                    <div id="confidence" class="confidence-badge">-</div>
+                </div>
+
+                <div class="analysis-grid">
+                    <div class="analysis-card">
+                        <h3>📈 Score Breakdown</h3>
+                        <div id="breakdown" class="breakdown-list"></div>
+                        <div class="total-score">
+                            Total Score: <span id="totalScore">-</span>
+                        </div>
+                    </div>
+
+                    <div class="analysis-card">
+                        <h3>📝 Text Analysis</h3>
+                        <div id="textAnalysis" class="analysis-details"></div>
+                    </div>
+
+                    <div class="analysis-card">
+                        <h3>🔍 Key Entities</h3>
+                        <div id="entities" class="entities-list"></div>
+                    </div>
+                </div>
+
+                <div id="insights" class="insights-section"></div>
+            </div>
+
+            <div class="batch-section">
+                <h2>Batch Estimation</h2>
+                <p class="section-description">Estimate multiple stories at once (JSON format)</p>
+                <textarea 
+                    id="batchStories" 
+                    placeholder='[
+  {
+    "id": "STORY-1",
+    "title": "User Authentication",
+    "description": "Implement OAuth login"
+  },
+  {
+    "id": "STORY-2", 
+    "title": "Bug Fix",
+    "description": "Fix button alignment"
+  }
+]'
+                    rows="8"
+                ></textarea>
+                <button id="batchEstimateBtn" class="btn btn-primary">
+                    <span class="btn-icon">📊</span>
+                    Estimate Batch
+                </button>
+                <div id="batchResults" class="batch-results" style="display: none;"></div>
+            </div>
+        </main>
+
+        <footer>
+            <p>Powered by Natural Language Processing • Built with ❤️</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+[
+  {
+    "id": "STORY-001",
+    "title": "Simple UI Fix",
+    "description": "Fix typo in the login button text. The button currently says 'Sing In' instead of 'Sign In'."
+  },
+  {
+    "id": "STORY-002",
+    "title": "Shopping Cart Feature",
+    "description": "As a user, I want to add items to my shopping cart so that I can purchase multiple products at once. The cart should display item count and total price."
+  },
+  {
+    "id": "STORY-003",
+    "title": "OAuth Integration",
+    "description": "Implement OAuth 2.0 authentication integration with Google and Microsoft providers. This includes setting up secure token management, implementing refresh token rotation, adding user profile synchronization, and ensuring GDPR compliance with proper data encryption and audit logging."
+  },
+  {
+    "id": "STORY-004",
+    "title": "Database Migration",
+    "description": "Migrate legacy user database from MySQL to PostgreSQL. Need to refactor all queries, update ORM configurations, ensure data integrity, and implement rollback strategy. Technical debt from old schema needs cleanup."
+  },
+  {
+    "id": "STORY-005",
+    "title": "Button Color Update",
+    "description": "Change the primary button color from blue to green to match new brand guidelines."
+  },
+  {
+    "id": "STORY-006",
+    "title": "API Performance Optimization",
+    "description": "Optimize the user search API endpoint. Currently taking 3-5 seconds, need to reduce to under 500ms. May require database indexing, caching strategy, and query optimization. Unclear if current architecture can support this."
+  },
+  {
+    "id": "STORY-007",
+    "title": "Email Notification System",
+    "description": "Create an email notification system that sends users alerts for important events. Should support multiple email templates, scheduling, and tracking delivery status."
+  },
+  {
+    "id": "STORY-008",
+    "title": "Research Spike - Payment Gateway",
+    "description": "Investigate and research different payment gateway options. Need to explore Stripe, PayPal, and Square. Unclear which one best fits our needs. TBD on integration complexity."
+  },
+  {
+    "id": "STORY-009",
+    "title": "User Profile Page",
+    "description": "Design and implement a user profile page where users can view and edit their personal information, upload profile pictures, and manage account settings."
+  },
+  {
+    "id": "STORY-010",
+    "title": "Security Audit Fix",
+    "description": "Address critical security vulnerabilities identified in the audit. Implement input sanitization, fix SQL injection risks, add rate limiting, update deprecated encryption methods, and ensure all API endpoints have proper authentication and authorization."
+  }
+]

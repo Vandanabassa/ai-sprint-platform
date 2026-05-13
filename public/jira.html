@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JIRA Integration - AI Sprint Platform</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="jira-styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔗 JIRA Integration</h1>
+            <p class="subtitle">Read-only story import from JIRA</p>
+            <nav class="header-nav">
+                <a href="index.html" class="nav-link">Story Estimator</a>
+                <a href="capacity.html" class="nav-link">Capacity Calculator</a>
+                <a href="predictor.html" class="nav-link">Success Predictor</a>
+                <a href="board.html" class="nav-link">Planning Board</a>
+                <a href="analytics.html" class="nav-link">Analytics</a>
+                <a href="jira.html" class="nav-link active">JIRA</a>
+            </nav>
+        </header>
+
+        <main>
+            <!-- Connection Setup -->
+            <div class="jira-section">
+                <h2>⚙️ JIRA Connection Setup</h2>
+                <p class="section-description">Configure your JIRA connection to import stories</p>
+                
+                <div class="connection-form">
+                    <div class="form-group">
+                        <label for="jiraUrl">JIRA URL *</label>
+                        <input type="text" id="jiraUrl" placeholder="https://your-domain.atlassian.net" required>
+                        <small>Your JIRA Cloud instance URL</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="jiraEmail">Email *</label>
+                        <input type="email" id="jiraEmail" placeholder="your-email@company.com" required>
+                        <small>Your JIRA account email</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="jiraApiToken">API Token *</label>
+                        <input type="password" id="jiraApiToken" placeholder="Enter your JIRA API token" required>
+                        <small>
+                            <a href="https://id.atlassian.com/manage-profile/security/api-tokens" target="_blank">
+                                Generate API token →
+                            </a>
+                        </small>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button id="testConnectionBtn" class="btn btn-secondary">
+                            <span class="btn-icon">🔌</span>
+                            Test Connection
+                        </button>
+                        <button id="saveCredentialsBtn" class="btn btn-primary">
+                            <span class="btn-icon">💾</span>
+                            Save Credentials
+                        </button>
+                    </div>
+                    
+                    <div id="connectionStatus" class="connection-status" style="display: none;"></div>
+                </div>
+            </div>
+
+            <!-- Import Stories -->
+            <div id="importSection" class="jira-section" style="display: none;">
+                <h2>📥 Import Stories</h2>
+                <p class="section-description">Select a project and import stories from JIRA</p>
+                
+                <div class="import-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="projectSelect">Project *</label>
+                            <select id="projectSelect" required>
+                                <option value="">Select a project...</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="maxResults">Max Results</label>
+                            <input type="number" id="maxResults" value="50" min="1" max="100">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="jqlQuery">JQL Query (Optional)</label>
+                        <input type="text" id="jqlQuery" placeholder="e.g., status = 'To Do' AND sprint is EMPTY">
+                        <small>Leave empty to import all stories from the selected project</small>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button id="loadProjectsBtn" class="btn btn-secondary">
+                            <span class="btn-icon">📂</span>
+                            Load Projects
+                        </button>
+                        <button id="importStoriesBtn" class="btn btn-primary" disabled>
+                            <span class="btn-icon">📥</span>
+                            Import Stories
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Import Results -->
+            <div id="importResults" class="results-section" style="display: none;">
+                <h2>✅ Import Results</h2>
+                
+                <div class="import-summary">
+                    <div class="summary-card">
+                        <div class="summary-icon">📊</div>
+                        <div class="summary-label">Total Found</div>
+                        <div id="totalFound" class="summary-value">0</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-icon">✅</div>
+                        <div class="summary-label">Imported</div>
+                        <div id="totalImported" class="summary-value">0</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-icon">🎯</div>
+                        <div class="summary-label">With Story Points</div>
+                        <div id="withPoints" class="summary-value">0</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-icon">🤖</div>
+                        <div class="summary-label">Auto-Estimated</div>
+                        <div id="autoEstimated" class="summary-value">0</div>
+                    </div>
+                </div>
+
+                <div class="stories-list">
+                    <h3>Imported Stories</h3>
+                    <div id="storiesList"></div>
+                </div>
+
+                <div class="export-actions">
+                    <button id="exportToJsonBtn" class="btn btn-secondary">
+                        <span class="btn-icon">💾</span>
+                        Export to JSON
+                    </button>
+                    <button id="sendToBoardBtn" class="btn btn-primary">
+                        <span class="btn-icon">📋</span>
+                        Send to Planning Board
+                    </button>
+                </div>
+            </div>
+
+            <!-- Help Section -->
+            <div class="jira-section help-section">
+                <h2>❓ How to Use</h2>
+                <div class="help-content">
+                    <div class="help-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Generate API Token</h4>
+                            <p>Go to your Atlassian account settings and create an API token for authentication.</p>
+                        </div>
+                    </div>
+                    <div class="help-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Configure Connection</h4>
+                            <p>Enter your JIRA URL, email, and API token. Test the connection to verify credentials.</p>
+                        </div>
+                    </div>
+                    <div class="help-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Select Project</h4>
+                            <p>Load your JIRA projects and select the one you want to import stories from.</p>
+                        </div>
+                    </div>
+                    <div class="help-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Import Stories</h4>
+                            <p>Click Import to fetch stories. Stories without points will be auto-estimated using AI.</p>
+                        </div>
+                    </div>
+                    <div class="help-step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Use Imported Data</h4>
+                            <p>Export to JSON or send directly to the Planning Board for sprint planning.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="security-note">
+                    <div class="note-icon">🔒</div>
+                    <div class="note-content">
+                        <h4>Security Note</h4>
+                        <p>Your JIRA credentials are stored locally in your browser and never sent to our servers. 
+                        All JIRA API calls are made directly from your browser to JIRA's servers.</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>Powered by AI Sprint Platform • Built with ❤️</p>
+        </footer>
+    </div>
+
+    <script src="jira.js"></script>
+</body>
+</html>

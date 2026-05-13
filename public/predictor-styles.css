@@ -1,0 +1,356 @@
+/* Sprint Success Predictor Styles */
+
+.predictor-section {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.predictor-section h2 {
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.predictor-section h3 {
+    color: #34495e;
+    margin: 1.5rem 0 1rem 0;
+    font-size: 1.2rem;
+}
+
+.section-description {
+    color: #7f8c8d;
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+}
+
+.stories-breakdown {
+    margin-top: 1rem;
+}
+
+.stories-breakdown textarea {
+    width: 100%;
+    padding: 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    resize: vertical;
+    transition: border-color 0.3s;
+}
+
+.stories-breakdown textarea:focus {
+    outline: none;
+    border-color: #3498db;
+}
+
+/* Probability Gauge */
+.probability-gauge {
+    text-align: center;
+    margin: 2rem 0;
+}
+
+.gauge-container {
+    position: relative;
+    width: 300px;
+    height: 180px;
+    margin: 0 auto 1rem;
+}
+
+.gauge-svg {
+    width: 100%;
+    height: 100%;
+}
+
+.gauge-background {
+    stroke-linecap: round;
+}
+
+.gauge-progress {
+    stroke-linecap: round;
+    transition: stroke-dashoffset 1s ease-out, stroke 0.5s ease;
+}
+
+.gauge-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -20%);
+    text-align: center;
+}
+
+.probability-value {
+    font-size: 3rem;
+    font-weight: bold;
+    color: #2c3e50;
+    line-height: 1;
+}
+
+.probability-label {
+    font-size: 0.9rem;
+    color: #7f8c8d;
+    margin-top: 0.5rem;
+}
+
+.risk-level-badge {
+    display: inline-block;
+    padding: 0.75rem 2rem;
+    border-radius: 25px;
+    font-weight: bold;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.risk-level-badge.low {
+    background: #d4edda;
+    color: #155724;
+}
+
+.risk-level-badge.medium {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.risk-level-badge.high {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+/* Metrics Grid */
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+.metric-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s;
+}
+
+.metric-card:hover {
+    transform: translateY(-5px);
+}
+
+.metric-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.metric-label {
+    font-size: 0.85rem;
+    opacity: 0.9;
+    margin-bottom: 0.5rem;
+}
+
+.metric-value {
+    font-size: 1.8rem;
+    font-weight: bold;
+}
+
+/* Risk Factors Section */
+.risk-section {
+    margin-top: 2rem;
+}
+
+.risk-section h3 {
+    color: #e74c3c;
+}
+
+.risk-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.risk-item {
+    background: white;
+    border-left: 4px solid #e74c3c;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.risk-item.high {
+    border-left-color: #e74c3c;
+    background: #fff5f5;
+}
+
+.risk-item.medium {
+    border-left-color: #f39c12;
+    background: #fffbf0;
+}
+
+.risk-item.low {
+    border-left-color: #95a5a6;
+    background: #f8f9fa;
+}
+
+.risk-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.risk-category {
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.risk-severity {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.risk-severity.high {
+    background: #e74c3c;
+    color: white;
+}
+
+.risk-severity.medium {
+    background: #f39c12;
+    color: white;
+}
+
+.risk-severity.low {
+    background: #95a5a6;
+    color: white;
+}
+
+.risk-message {
+    color: #555;
+    line-height: 1.5;
+}
+
+.risk-impact {
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    color: #7f8c8d;
+}
+
+/* Strengths Section */
+.strengths-section {
+    margin-top: 2rem;
+}
+
+.strengths-section h3 {
+    color: #27ae60;
+}
+
+.strengths-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.strength-item {
+    background: #d4edda;
+    border-left: 4px solid #27ae60;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.strength-category {
+    font-weight: bold;
+    color: #155724;
+    margin-bottom: 0.25rem;
+}
+
+.strength-message {
+    color: #155724;
+    line-height: 1.5;
+}
+
+/* Recommendations */
+.insights-section {
+    margin-top: 2rem;
+}
+
+.insight.critical {
+    background: #f8d7da;
+    border-left-color: #721c24;
+}
+
+.insight.critical .insight-icon {
+    color: #721c24;
+}
+
+.insight.action {
+    background: #d1ecf1;
+    border-left-color: #0c5460;
+}
+
+.insight.action .insight-icon {
+    color: #0c5460;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .predictor-section {
+        padding: 1.5rem;
+    }
+
+    .gauge-container {
+        width: 250px;
+        height: 150px;
+    }
+
+    .probability-value {
+        font-size: 2.5rem;
+    }
+
+    .metrics-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .config-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Animation for gauge */
+@keyframes fillGauge {
+    from {
+        stroke-dashoffset: 251.2;
+    }
+}
+
+.gauge-progress.animate {
+    animation: fillGauge 1.5s ease-out;
+}
+
+/* Empty state */
+.empty-state {
+    text-align: center;
+    padding: 3rem;
+    color: #7f8c8d;
+}
+
+.empty-state-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.empty-state-message {
+    font-size: 1.1rem;
+}
+
+/* Made with Bob */
