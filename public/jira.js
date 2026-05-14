@@ -28,6 +28,7 @@ const projectSelect = document.getElementById('projectSelect');
 const jqlQueryInput = document.getElementById('jqlQuery');
 const loadProjectsBtn = document.getElementById('loadProjectsBtn');
 const importStoriesBtn = document.getElementById('importStoriesBtn');
+const loadSampleBtn = document.getElementById('loadSampleBtn');
 const importResults = document.getElementById('importResults');
 const exportToJsonBtn = document.getElementById('exportToJsonBtn');
 const sendToBoardBtn = document.getElementById('sendToBoardBtn');
@@ -37,6 +38,7 @@ testConnectionBtn.addEventListener('click', testConnection);
 saveCredentialsBtn.addEventListener('click', saveCredentials);
 loadProjectsBtn.addEventListener('click', loadProjects);
 importStoriesBtn.addEventListener('click', importStories);
+loadSampleBtn.addEventListener('click', loadSampleStories);
 exportToJsonBtn.addEventListener('click', exportToJson);
 sendToBoardBtn.addEventListener('click', sendToBoard);
 projectSelect.addEventListener('change', () => {
@@ -205,6 +207,7 @@ async function importStories() {
     const jiraUrl = jiraUrlInput.value.trim();
     const email = jiraEmailInput.value.trim();
     const apiToken = jiraApiTokenInput.value.trim();
+    const usePAT = usePATCheckbox.checked;
     const projectKey = projectSelect.value;
     const jql = jqlQueryInput.value.trim();
     
@@ -222,7 +225,7 @@ async function importStories() {
         const response = await fetch(`${API_BASE_URL}/api/jira/import-stories`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ jiraUrl, email, apiToken, projectKey, jql })
+            body: JSON.stringify({ jiraUrl, email, apiToken, usePAT, projectKey, jql })
         });
         
         const data = await response.json();
@@ -243,6 +246,36 @@ async function importStories() {
         hideLoading();
         importStoriesBtn.disabled = false;
         importStoriesBtn.innerHTML = '<span class="btn-icon">📥</span> Import Stories';
+    }
+}
+
+// Load Sample Stories
+async function loadSampleStories() {
+    loadSampleBtn.disabled = true;
+    loadSampleBtn.innerHTML = '<span class="btn-icon">⏳</span> Loading...';
+    
+    showLoading('Loading sample JIRA stories...');
+    
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/jira/sample-stories`);
+        const data = await response.json();
+        
+        if (response.ok && data.success) {
+            importedStories = data.stories;
+            displayImportResults(data);
+            showStatus('success', 'Sample Stories Loaded!',
+                `Loaded ${data.imported} sample stories with AI estimations. ${data.demo ? '(Demo Mode)' : ''}`);
+        } else {
+            throw new Error(data.message || 'Failed to load sample stories');
+        }
+    } catch (error) {
+        console.error('Sample stories error:', error);
+        showStatus('error', 'Failed to Load Sample Stories',
+            error.message || 'Unable to load sample stories. Please try again.');
+    } finally {
+        hideLoading();
+        loadSampleBtn.disabled = false;
+        loadSampleBtn.innerHTML = '<span class="btn-icon">🎯</span> Load Sample Stories';
     }
 }
 

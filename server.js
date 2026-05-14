@@ -1421,27 +1421,50 @@ app.post('/api/jira/projects', async (req, res) => {
 // Import stories from JIRA
 app.post('/api/jira/import-stories', async (req, res) => {
   try {
-    const { jiraUrl, email, apiToken, projectKey, jql } = req.body;
+    const { jiraUrl, email, apiToken, projectKey, jql, usePAT } = req.body;
     
-    if (!jiraUrl || !email || !apiToken || !projectKey) {
+    if (!jiraUrl || !apiToken || !projectKey) {
       return res.status(400).json({
-        error: 'JIRA credentials and project key are required'
+        error: 'JIRA URL, token, and project key are required'
       });
     }
     
-    const auth = Buffer.from(`${email}:${apiToken}`).toString('base64');
+    // Determine authentication method
+    const useBearer = usePAT || !email;
+    
+    let authHeader;
+    if (useBearer) {
+      authHeader = `Bearer ${apiToken}`;
+    } else {
+      const auth = Buffer.from(`${email}:${apiToken}`).toString('base64');
+      authHeader = `Basic ${auth}`;
+    }
     
     // Build JQL query
     const query = jql || `project = ${projectKey} AND type = Story ORDER BY created DESC`;
-    const searchUrl = `${jiraUrl}/rest/api/3/search?jql=${encodeURIComponent(query)}&maxResults=100`;
     
-    const response = await fetch(searchUrl, {
+    // Try API v2 first, then v3
+    let searchUrl = `${jiraUrl}/rest/api/2/search?jql=${encodeURIComponent(query)}&maxResults=100`;
+    
+    let response = await fetch(searchUrl, {
       method: 'GET',
       headers: {
-        'Authorization': `Basic ${auth}`,
+        'Authorization': authHeader,
         'Accept': 'application/json'
       }
     });
+    
+    // If v2 fails, try v3
+    if (!response.ok) {
+      searchUrl = `${jiraUrl}/rest/api/3/search?jql=${encodeURIComponent(query)}&maxResults=100`;
+      response = await fetch(searchUrl, {
+        method: 'GET',
+        headers: {
+          'Authorization': authHeader,
+          'Accept': 'application/json'
+        }
+      });
+    }
     
     if (response.ok) {
       const data = await response.json();
@@ -1485,6 +1508,42 @@ app.post('/api/jira/import-stories', async (req, res) => {
     console.error('JIRA import error:', error);
     res.status(500).json({
       error: 'Failed to import stories from JIRA',
+      message: error.message
+    });
+  }
+});
+
+// Load sample JIRA stories (for demo/testing)
+app.get('/api/jira/sample-stories', async (req, res) => {
+  try {
+    const fs = require('fs');
+    const path = require('path');
+    const sampleFilePath = path.join(__dirname, 'sample-jira-stories.json');
+    
+    // Read sample stories file
+    const sampleData = JSON.parse(fs.readFileSync(sampleFilePath, 'utf8'));
+    
+    // Auto-estimate stories without story points
+    const stories = sampleData.stories.map(story => {
+      if (!story.storyPoints && story.description) {
+        story.estimation = estimateStoryPoints(story.description);
+        story.storyPoints = story.estimation.storyPoints;
+      }
+      return story;
+    });
+    
+    res.json({
+      success: true,
+      total: stories.length,
+      imported: stories.length,
+      stories,
+      demo: true,
+      message: 'Sample stories loaded successfully'
+    });
+  } catch (error) {
+    console.error('Sample stories error:', error);
+    res.status(500).json({
+      error: 'Failed to load sample stories',
       message: error.message
     });
   }
