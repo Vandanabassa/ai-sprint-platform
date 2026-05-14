@@ -1,0 +1,112 @@
+[
+  {
+    "id": "AIS-101",
+    "title": "Implement user authentication with OAuth 2.0",
+    "description": "As a user, I want to securely log in using OAuth 2.0 so that my credentials are protected. This includes integration with Google, Microsoft, and GitHub providers. Need to implement token refresh mechanism and handle edge cases for expired sessions.",
+    "priority": "high",
+    "assignee": "John Smith",
+    "estimation": {
+      "storyPoints": 3,
+      "confidence": "medium"
+    }
+  },
+  {
+    "id": "AIS-102",
+    "title": "Fix button alignment on mobile devices",
+    "description": "The submit button on the login page is misaligned on mobile devices with screen width less than 375px. Need to adjust CSS media queries.",
+    "priority": "low",
+    "assignee": "Sarah Johnson",
+    "estimation": {
+      "storyPoints": 2,
+      "confidence": "high"
+    }
+  },
+  {
+    "id": "AIS-103",
+    "title": "Migrate database from MySQL to PostgreSQL",
+    "description": "As part of our infrastructure modernization, we need to migrate our entire database from MySQL 5.7 to PostgreSQL 14. This includes schema migration, data migration, updating all queries, and ensuring zero downtime during the migration process.",
+    "priority": "high",
+    "assignee": "Michael Chen",
+    "estimation": {
+      "storyPoints": 5,
+      "confidence": "medium"
+    }
+  },
+  {
+    "id": "AIS-104",
+    "title": "Add dark mode toggle to user settings",
+    "description": "Users want the ability to switch between light and dark themes. Implement a toggle in user settings that persists the preference and applies it across all pages.",
+    "priority": "medium",
+    "assignee": "Emily Davis",
+    "estimation": {
+      "storyPoints": 2,
+      "confidence": "high"
+    }
+  },
+  {
+    "id": "AIS-105",
+    "title": "Implement real-time notifications using WebSockets",
+    "description": "As a user, I want to receive real-time notifications for important events without refreshing the page. This requires implementing WebSocket connections, handling reconnection logic, and creating a notification center UI component.",
+    "priority": "medium",
+    "assignee": "David Wilson",
+    "estimation": {
+      "storyPoints": 3,
+      "confidence": "medium"
+    }
+  },
+  {
+    "id": "AIS-106",
+    "title": "Optimize API response time for dashboard queries",
+    "description": "Dashboard API endpoints are taking 3-5 seconds to respond. Need to implement caching, optimize database queries, and add pagination to improve performance to under 500ms.",
+    "priority": "high",
+    "assignee": "Lisa Anderson",
+    "estimation": {
+      "storyPoints": 8,
+      "confidence": "low"
+    }
+  },
+  {
+    "id": "AIS-107",
+    "title": "Create user onboarding tutorial",
+    "description": "New users are confused about how to use the platform. Create an interactive tutorial that guides them through key features on first login.",
+    "priority": "medium",
+    "assignee": "Robert Taylor",
+    "estimation": {
+      "storyPoints": 2,
+      "confidence": "high"
+    }
+  },
+  {
+    "id": "AIS-108",
+    "title": "Fix memory leak in data processing module",
+    "description": "The data processing module is causing memory leaks when processing large datasets (>10MB). Memory usage grows continuously and doesn't get garbage collected. Need to investigate and fix.",
+    "priority": "high",
+    "assignee": "Jennifer Martinez",
+    "estimation": {
+      "storyPoints": 2,
+      "confidence": "high"
+    }
+  },
+  {
+    "id": "AIS-109",
+    "title": "Add export to PDF functionality for reports",
+    "description": "Users want to export their reports as PDF files. Implement PDF generation with proper formatting, charts, and tables.",
+    "priority": "medium",
+    "assignee": "Kevin Brown",
+    "estimation": {
+      "storyPoints": 2,
+      "confidence": "high"
+    }
+  },
+  {
+    "id": "AIS-110",
+    "title": "Implement two-factor authentication (2FA)",
+    "description": "As a security enhancement, implement two-factor authentication using TOTP (Time-based One-Time Password). Support authenticator apps like Google Authenticator and Authy.",
+    "priority": "high",
+    "assignee": "Amanda White",
+    "estimation": {
+      "storyPoints": 3,
+      "confidence": "medium"
+    }
+  }
+]
