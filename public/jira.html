@@ -31,23 +31,40 @@
                 <div class="connection-form">
                     <div class="form-group">
                         <label for="jiraUrl">JIRA URL *</label>
-                        <input type="text" id="jiraUrl" placeholder="https://your-domain.atlassian.net" required>
-                        <small>Your JIRA Cloud instance URL</small>
+                        <input type="text" id="jiraUrl" placeholder="https://stg.jsw.ibm.com" required>
+                        <small>Your JIRA instance URL (e.g., https://stg.jsw.ibm.com)</small>
                     </div>
                     
                     <div class="form-group">
-                        <label for="jiraEmail">Email *</label>
-                        <input type="email" id="jiraEmail" placeholder="your-email@company.com" required>
-                        <small>Your JIRA account email</small>
+                        <label>
+                            <input type="checkbox" id="usePAT" style="width: auto; margin-right: 8px;">
+                            Use Personal Access Token (PAT) - Required for IBM JIRA
+                        </label>
+                        <small style="display: block; margin-top: 8px;">
+                            ✅ Check this if you're using IBM JIRA or if Basic Auth is disabled
+                        </small>
+                    </div>
+                    
+                    <div class="form-group" id="emailGroup">
+                        <label for="jiraEmail">Email</label>
+                        <input type="email" id="jiraEmail" placeholder="your-email@company.com">
+                        <small>Your JIRA account email (not required for PAT)</small>
                     </div>
                     
                     <div class="form-group">
-                        <label for="jiraApiToken">API Token *</label>
-                        <input type="password" id="jiraApiToken" placeholder="Enter your JIRA API token" required>
-                        <small>
-                            <a href="https://id.atlassian.com/manage-profile/security/api-tokens" target="_blank">
-                                Generate API token →
-                            </a>
+                        <label for="jiraApiToken">
+                            <span id="tokenLabel">API Token / Personal Access Token *</span>
+                        </label>
+                        <input type="password" id="jiraApiToken" placeholder="Enter your token" required>
+                        <small id="tokenHelp">
+                            <span id="patHelp" style="display: none;">
+                                For IBM JIRA: Profile → Personal Access Tokens → Create Token
+                            </span>
+                            <span id="apiHelp">
+                                <a href="https://id.atlassian.com/manage-profile/security/api-tokens" target="_blank">
+                                    Generate API token →
+                                </a>
+                            </span>
                         </small>
                     </div>
                     

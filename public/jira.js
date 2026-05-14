@@ -5,7 +5,8 @@ const API_BASE_URL = window.location.origin;
 const STORAGE_KEYS = {
     JIRA_URL: 'jira_url',
     JIRA_EMAIL: 'jira_email',
-    JIRA_API_TOKEN: 'jira_api_token'
+    JIRA_API_TOKEN: 'jira_api_token',
+    USE_PAT: 'use_pat'
 };
 
 // State
@@ -15,6 +16,10 @@ let importedStories = [];
 const jiraUrlInput = document.getElementById('jiraUrl');
 const jiraEmailInput = document.getElementById('jiraEmail');
 const jiraApiTokenInput = document.getElementById('jiraApiToken');
+const usePATCheckbox = document.getElementById('usePAT');
+const emailGroup = document.getElementById('emailGroup');
+const patHelp = document.getElementById('patHelp');
+const apiHelp = document.getElementById('apiHelp');
 const testConnectionBtn = document.getElementById('testConnectionBtn');
 const saveCredentialsBtn = document.getElementById('saveCredentialsBtn');
 const connectionStatus = document.getElementById('connectionStatus');
@@ -38,17 +43,38 @@ projectSelect.addEventListener('change', () => {
     importStoriesBtn.disabled = !projectSelect.value;
 });
 
+// Handle PAT checkbox toggle
+usePATCheckbox.addEventListener('change', () => {
+    const usePAT = usePATCheckbox.checked;
+    if (usePAT) {
+        emailGroup.style.opacity = '0.5';
+        jiraEmailInput.required = false;
+        patHelp.style.display = 'block';
+        apiHelp.style.display = 'none';
+    } else {
+        emailGroup.style.opacity = '1';
+        jiraEmailInput.required = true;
+        patHelp.style.display = 'none';
+        apiHelp.style.display = 'block';
+    }
+});
+
 // Load saved credentials
 function loadSavedCredentials() {
     const savedUrl = localStorage.getItem(STORAGE_KEYS.JIRA_URL);
     const savedEmail = localStorage.getItem(STORAGE_KEYS.JIRA_EMAIL);
     const savedToken = localStorage.getItem(STORAGE_KEYS.JIRA_API_TOKEN);
+    const savedUsePAT = localStorage.getItem(STORAGE_KEYS.USE_PAT) === 'true';
     
     if (savedUrl) jiraUrlInput.value = savedUrl;
     if (savedEmail) jiraEmailInput.value = savedEmail;
     if (savedToken) jiraApiTokenInput.value = savedToken;
+    if (savedUsePAT) {
+        usePATCheckbox.checked = true;
+        usePATCheckbox.dispatchEvent(new Event('change'));
+    }
     
-    if (savedUrl && savedEmail && savedToken) {
+    if (savedUrl && savedToken) {
         showStatus('info', 'Saved Credentials Loaded', 'Your previously saved JIRA credentials have been loaded.');
         importSection.style.display = 'block';
     }
@@ -59,9 +85,15 @@ async function testConnection() {
     const jiraUrl = jiraUrlInput.value.trim();
     const email = jiraEmailInput.value.trim();
     const apiToken = jiraApiTokenInput.value.trim();
+    const usePAT = usePATCheckbox.checked;
     
-    if (!jiraUrl || !email || !apiToken) {
-        showStatus('error', 'Missing Information', 'Please fill in all required fields.');
+    if (!jiraUrl || !apiToken) {
+        showStatus('error', 'Missing Information', 'Please fill in JIRA URL and token.');
+        return;
+    }
+    
+    if (!usePAT && !email) {
+        showStatus('error', 'Missing Email', 'Email is required when not using PAT.');
         return;
     }
     
@@ -72,22 +104,22 @@ async function testConnection() {
         const response = await fetch(`${API_BASE_URL}/api/jira/test-connection`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ jiraUrl, email, apiToken })
+            body: JSON.stringify({ jiraUrl, email, apiToken, usePAT })
         });
         
         const data = await response.json();
         
         if (response.ok && data.success) {
-            showStatus('success', 'Connection Successful!', 
-                `Connected as ${data.user.displayName} (${data.user.emailAddress})`);
+            showStatus('success', 'Connection Successful!',
+                `Connected as ${data.user.displayName} using ${data.authMethod} authentication`);
             importSection.style.display = 'block';
         } else {
             throw new Error(data.message || 'Connection failed');
         }
     } catch (error) {
         console.error('Connection error:', error);
-        showStatus('error', 'Connection Failed', 
-            'Unable to connect to JIRA. Please check your credentials and try again.');
+        showStatus('error', 'Connection Failed',
+            error.message || 'Unable to connect to JIRA. Please check your credentials and try again.');
     } finally {
         testConnectionBtn.disabled = false;
         testConnectionBtn.innerHTML = '<span class="btn-icon">🔌</span> Test Connection';
@@ -99,17 +131,19 @@ function saveCredentials() {
     const jiraUrl = jiraUrlInput.value.trim();
     const email = jiraEmailInput.value.trim();
     const apiToken = jiraApiTokenInput.value.trim();
+    const usePAT = usePATCheckbox.checked;
     
-    if (!jiraUrl || !email || !apiToken) {
-        showStatus('error', 'Missing Information', 'Please fill in all required fields.');
+    if (!jiraUrl || !apiToken) {
+        showStatus('error', 'Missing Information', 'Please fill in JIRA URL and token.');
         return;
     }
     
     localStorage.setItem(STORAGE_KEYS.JIRA_URL, jiraUrl);
     localStorage.setItem(STORAGE_KEYS.JIRA_EMAIL, email);
     localStorage.setItem(STORAGE_KEYS.JIRA_API_TOKEN, apiToken);
+    localStorage.setItem(STORAGE_KEYS.USE_PAT, usePAT.toString());
     
-    showStatus('success', 'Credentials Saved', 
+    showStatus('success', 'Credentials Saved',
         'Your JIRA credentials have been saved locally in your browser.');
 }
 
@@ -118,8 +152,9 @@ async function loadProjects() {
     const jiraUrl = jiraUrlInput.value.trim();
     const email = jiraEmailInput.value.trim();
     const apiToken = jiraApiTokenInput.value.trim();
+    const usePAT = usePATCheckbox.checked;
     
-    if (!jiraUrl || !email || !apiToken) {
+    if (!jiraUrl || !apiToken) {
         showStatus('error', 'Missing Credentials', 'Please configure your JIRA connection first.');
         return;
     }
@@ -131,22 +166,22 @@ async function loadProjects() {
         const response = await fetch(`${API_BASE_URL}/api/jira/projects`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ jiraUrl, email, apiToken })
+            body: JSON.stringify({ jiraUrl, email, apiToken, usePAT })
         });
         
         const data = await response.json();
         
         if (response.ok && data.success) {
             populateProjects(data.projects);
-            showStatus('success', 'Projects Loaded', 
+            showStatus('success', 'Projects Loaded',
                 `Found ${data.projects.length} projects in your JIRA instance.`);
         } else {
             throw new Error(data.message || 'Failed to load projects');
         }
     } catch (error) {
         console.error('Load projects error:', error);
-        showStatus('error', 'Failed to Load Projects', 
-            'Unable to fetch projects from JIRA. Please check your connection.');
+        showStatus('error', 'Failed to Load Projects',
+            error.message || 'Unable to fetch projects from JIRA. Please check your connection.');
     } finally {
         loadProjectsBtn.disabled = false;
         loadProjectsBtn.innerHTML = '<span class="btn-icon">📂</span> Load Projects';

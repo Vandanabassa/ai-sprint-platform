@@ -1280,38 +1280,66 @@ function generateAnalyticsRecommendations(avgAccuracy, successRate, velocityAnal
 // Test JIRA connection
 app.post('/api/jira/test-connection', async (req, res) => {
   try {
-    const { jiraUrl, email, apiToken } = req.body;
+    const { jiraUrl, email, apiToken, usePAT } = req.body;
     
-    if (!jiraUrl || !email || !apiToken) {
+    if (!jiraUrl || !apiToken) {
       return res.status(400).json({
-        error: 'JIRA URL, email, and API token are required'
+        error: 'JIRA URL and token are required'
       });
     }
     
-    // Test connection by fetching user info
-    const auth = Buffer.from(`${email}:${apiToken}`).toString('base64');
-    const testUrl = `${jiraUrl}/rest/api/3/myself`;
+    // Determine authentication method
+    // If usePAT is true or email is empty, use Bearer token (PAT)
+    // Otherwise, use Basic authentication
+    const useBearer = usePAT || !email;
     
-    const response = await fetch(testUrl, {
+    let authHeader;
+    if (useBearer) {
+      // Use Bearer token for Personal Access Token (IBM JIRA)
+      authHeader = `Bearer ${apiToken}`;
+    } else {
+      // Use Basic authentication for API tokens (JIRA Cloud)
+      const auth = Buffer.from(`${email}:${apiToken}`).toString('base64');
+      authHeader = `Basic ${auth}`;
+    }
+    
+    // Try API v2 first (JIRA Server/Data Center), then v3 (JIRA Cloud)
+    let testUrl = `${jiraUrl}/rest/api/2/myself`;
+    
+    let response = await fetch(testUrl, {
       method: 'GET',
       headers: {
-        'Authorization': `Basic ${auth}`,
+        'Authorization': authHeader,
         'Accept': 'application/json'
       }
     });
+    
+    // If v2 fails, try v3
+    if (!response.ok) {
+      testUrl = `${jiraUrl}/rest/api/3/myself`;
+      response = await fetch(testUrl, {
+        method: 'GET',
+        headers: {
+          'Authorization': authHeader,
+          'Accept': 'application/json'
+        }
+      });
+    }
     
     if (response.ok) {
       const userData = await response.json();
       res.json({
         success: true,
         message: 'Connection successful',
+        authMethod: useBearer ? 'Bearer (PAT)' : 'Basic',
         user: {
-          displayName: userData.displayName,
-          emailAddress: userData.emailAddress
+          displayName: userData.displayName || userData.name,
+          emailAddress: userData.emailAddress || userData.email || email
         }
       });
     } else {
-      throw new Error('Authentication failed');
+      const errorText = await response.text();
+      throw new Error(`Authentication failed: ${errorText}`);
     }
   } catch (error) {
     console.error('JIRA connection error:', error);
@@ -1325,24 +1353,47 @@ app.post('/api/jira/test-connection', async (req, res) => {
 // Get JIRA projects
 app.post('/api/jira/projects', async (req, res) => {
   try {
-    const { jiraUrl, email, apiToken } = req.body;
+    const { jiraUrl, email, apiToken, usePAT } = req.body;
     
-    if (!jiraUrl || !email || !apiToken) {
+    if (!jiraUrl || !apiToken) {
       return res.status(400).json({
-        error: 'JIRA credentials are required'
+        error: 'JIRA URL and token are required'
       });
     }
     
-    const auth = Buffer.from(`${email}:${apiToken}`).toString('base64');
-    const projectsUrl = `${jiraUrl}/rest/api/3/project`;
+    // Determine authentication method
+    const useBearer = usePAT || !email;
     
-    const response = await fetch(projectsUrl, {
+    let authHeader;
+    if (useBearer) {
+      authHeader = `Bearer ${apiToken}`;
+    } else {
+      const auth = Buffer.from(`${email}:${apiToken}`).toString('base64');
+      authHeader = `Basic ${auth}`;
+    }
+    
+    // Try API v2 first, then v3
+    let projectsUrl = `${jiraUrl}/rest/api/2/project`;
+    
+    let response = await fetch(projectsUrl, {
       method: 'GET',
       headers: {
-        'Authorization': `Basic ${auth}`,
+        'Authorization': authHeader,
         'Accept': 'application/json'
       }
     });
+    
+    // If v2 fails, try v3
+    if (!response.ok) {
+      projectsUrl = `${jiraUrl}/rest/api/3/project`;
+      response = await fetch(projectsUrl, {
+        method: 'GET',
+        headers: {
+          'Authorization': authHeader,
+          'Accept': 'application/json'
+        }
+      });
+    }
     
     if (response.ok) {
       const projects = await response.json();
@@ -1355,7 +1406,8 @@ app.post('/api/jira/projects', async (req, res) => {
         }))
       });
     } else {
-      throw new Error('Failed to fetch projects');
+      const errorText = await response.text();
+      throw new Error(`Failed to fetch projects: ${errorText}`);
     }
   } catch (error) {
     console.error('JIRA projects error:', error);
