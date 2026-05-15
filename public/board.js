@@ -524,6 +524,37 @@ window.editStory = editStory;
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
     console.log('Sprint Planning Board initialized');
+    
+    // Check if stories were imported from JIRA
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('import') === 'jira') {
+        const jiraStories = localStorage.getItem('jira_imported_stories');
+        if (jiraStories) {
+            try {
+                const stories = JSON.parse(jiraStories);
+                // Add stories to backlog
+                boardState.backlog = stories.map(story => ({
+                    id: story.id,
+                    title: story.title,
+                    description: story.description,
+                    priority: story.priority || 'medium',
+                    assignee: story.assignee || '',
+                    estimation: story.estimation || {
+                        storyPoints: 0,
+                        confidence: 'unknown'
+                    }
+                }));
+                // Clear the localStorage item
+                localStorage.removeItem('jira_imported_stories');
+                console.log(`Imported ${stories.length} stories from JIRA`);
+                alert(`Successfully imported ${stories.length} stories from JIRA!`);
+            } catch (error) {
+                console.error('Error importing JIRA stories:', error);
+                alert('Failed to import stories from JIRA. Please try again.');
+            }
+        }
+    }
+    
     renderBoard();
     updateStats();
 });
